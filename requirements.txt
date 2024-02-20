@@ -1,0 +1,4 @@
+datetime
+discord.py-self
+colorama
+tqdm
