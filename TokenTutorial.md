@@ -1,10 +1,10 @@
 # Console Script
 1. 'CTRL + SHIFT + I' in browser or desktop app then open 'console' Tab
-2. Copy the code below then paste it into the console.
+2. Copy the code below then paste it into the console
 ```js
-window.webpackChunkdiscord_app.push([[Math.random()],{},e=>{for(const o of Object.keys(e.c).map(o=>e.c[o].exports).filter(e=>e)){if(o.default&&void 0!==o.default.getToken)return copy(o.default.getToken());if(void 0!==o.getToken)return copy(o.getToken())}}]);
-console.log("%cToken copied to your clipboard!", "font-size: 25px");
+(webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken()
 ```
+3. Copy the token that is printed upon running the code
 # Network Method
 1. 'CTRL + SHIFT + I' then open 'Network' Tab
 2. Send message in discord and search 'messages' in filter
