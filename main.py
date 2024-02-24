@@ -153,5 +153,5 @@ if __name__ == "__main__":
     banner()
     token = input(f"{CYAN}Enter User Token: {Style.RESET_ALL}").strip()
     client = Vindicate()
-    client.run(token, bot=False)
+    client.run(token)
     clear()
