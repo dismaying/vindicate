@@ -10,7 +10,10 @@ Vindicate is a tool designed for deleting your messages in any channel that you 
 
 ## Prerequisites
 
-Before running the script, ensure you have Python 3.6 or later installed on your machine. 
+Before running the script, ensure you have Python 3.6+ (required) and git (optional) installed for convenience.
+
+### Git download link for Windows
+[Git](https://git-scm.com/download/win)
 
 ## Installation
 
