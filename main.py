@@ -21,21 +21,22 @@ from tqdm.asyncio import tqdm
 
 init(autoreset=True)
 
-log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+log_formatter = logging.Formatter('[vindicate] %(message)s')
 log_file = 'vindicate.log'
 
-log_handler = RotatingFileHandler(log_file, mode='a', maxBytes=5*1024*1024, backupCount=3, encoding=None, delay=0)
+log_handler = RotatingFileHandler(log_file, mode='a', maxBytes=5*1024*1024, backupCount=2, encoding=None, delay=0)
 log_handler.setFormatter(log_formatter)
 log_handler.setLevel(logging.INFO)
 
-logging.basicConfig(handlers=[log_handler], level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(handlers=[log_handler], level=logging.INFO, format='%(message)s')
 
 CYAN = Fore.CYAN
 DARK_RED = Fore.RED
+GREEN = Fore.GREEN
 
-RATE_LIMIT_WINDOW = 60
-RATE_LIMIT_MESSAGES = 25
-RATE_LIMIT_COUNTDOWN = 10
+RATE_LIMIT_WINDOW = 120  # 2 minutes
+RATE_LIMIT_MESSAGES = 15  # Max 15 messages per window
+RATE_LIMIT_COUNTDOWN = 15  # 15 seconds countdown
 
 bk: Dict[int, Dict[str, Any]] = {}
 
@@ -61,16 +62,13 @@ class RateLimiter:
     @staticmethod
     def get_user_limit(user_id: int) -> Dict[str, Any]:
         """Gets or initializes the rate limit information for a user."""
-
         if user_id not in bk:
-            now = datetime.datetime.now()
-            bk[user_id] = {"last_reset": now, "count": 0}
+            bk[user_id] = {"last_reset": datetime.datetime.now(), "count": 0}
         return bk[user_id]
 
     @staticmethod
     async def handle_rate_limit(user_id: int):
         """Handles rate limiting by waiting when the limit is exceeded."""
-
         limit_info = RateLimiter.get_user_limit(user_id)
         now = datetime.datetime.now()
 
@@ -79,14 +77,12 @@ class RateLimiter:
             limit_info["count"] = 0
 
         while limit_info["count"] >= RATE_LIMIT_MESSAGES:
-            logging.warning("Rate limit exceeded. Waiting for cooldown...")
+            logging.warning(f"{DARK_RED}Rate limit exceeded. Waiting for cooldown...{Style.RESET_ALL}")
             for i in range(RATE_LIMIT_COUNTDOWN, 0, -1):
                 print(f"{DARK_RED}Retry in {i} seconds...{Style.RESET_ALL}", end="\r")
                 await asyncio.sleep(1)
-            now = datetime.datetime.now()
-            if (now - limit_info["last_reset"]).seconds >= RATE_LIMIT_WINDOW:
-                limit_info["last_reset"] = now
-                limit_info["count"] = 0
+            limit_info["last_reset"] = now
+            limit_info["count"] = 0
 
 class Vindicate(discord.Client):
     """A client for deleting messages in Discord channels."""
